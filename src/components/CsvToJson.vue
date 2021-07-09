@@ -11,11 +11,12 @@ export default {
 
       let fr = new FileReader()
       fr.onload = () => {
-        const json = csv2json(fr.result, {parseNumbers: true}).map(obj => {
+        const json = csv2json(fr.result, {parseNumbers: true}).map((obj,index) => {
 
           const keys = Object.keys(obj)
 
           return {
+            index,
             'datahora' : obj[keys[0]],
             'nome' : obj[keys[1]],
             'vinculo' : obj[keys[2]],

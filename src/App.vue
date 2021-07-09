@@ -1,38 +1,205 @@
 <template>
-  <div id="app" class='container'>
-    <csv-to-json @json='json = $event'/>
-    <culto :inscricoes='primeiroCulto'/>
-    <culto :inscricoes='segundoCulto'/>
+  <div id="app" class="container">
+    <csv-to-json @json="json = $event" class="print-hide" />
+
+    <form class="print-hide">
+      <div class="mb-3">
+        <label for="dataCulto" class="form-label">Data do Culto</label>
+        <input
+          type="date"
+          class="form-control"
+          id="dataCulto"
+          aria-describedby="emailHelp"
+          v-model="data"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="vagas" class="form-label">Vagas</label>
+        <input type="number" class="form-control" id="vagas" v-model='vagas'/>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <table class="tabela-conteudo">
+      <thead>
+        <tr>
+          <td>
+            <div class="header-space">&nbsp;</div>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="content">
+              <culto class="primeiro-culto culto"
+                :inscricoes="primeiroCulto"
+                v-if="primeiroCulto.length"
+                :data="dataFormatada"
+                :vagas='vagas'
+                horario="09h00"
+              />
+              <culto class="culto"
+                :inscricoes="segundoCulto"
+                v-if="segundoCulto.length"
+                :data="dataFormatada"
+                :vagas='vagas'
+                horario="10h30"
+              />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>
+            <div class="footer-space">&nbsp;</div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="print-show header">
+      <cabecalho />
+    </div>
+    <div class="footer print-show">
+      <small class="cnpj d-block text-center"
+        >CNPJ 85.116.671/0001-75 | Servidão Antônio Irineu da Silva, 325 –
+        Córrego Grande – 88037-600 – Florianópolis, SC | +55 (48)
+        3304-4925</small
+      >
+    </div>
   </div>
 </template>
 <script>
-import 'bootstrap/dist/css/bootstrap.min.css';
-import CsvToJson from './components/CsvToJson'
-import Culto from './components/Culto'
+import "bootstrap/dist/css/bootstrap.min.css";
+import CsvToJson from "./components/CsvToJson";
+import Culto from "./components/Culto";
+import Cabecalho from "./components/Cabecalho";
+import { parseISO, format } from "date-fns";
 export default {
-  name: 'App',
+  name: "App",
   components: {
     CsvToJson,
-    Culto
+    Culto,
+    Cabecalho,
   },
   data() {
     return {
-      json:[]
-    }
+      json: [],
+      data: null,
+      vagas: 60
+    };
   },
   computed: {
     primeiroCulto() {
-      return this.json.filter(i => i.horario.indexOf('1') === 0)
+      return this.json.filter((i) => i.horario.indexOf("1") === 0);
     },
     segundoCulto() {
-      return this.json.filter(i => i.horario.indexOf('2') === 0)
-    }
+      return this.json.filter((i) => i.horario.indexOf("2") === 0);
+    },
+    dataFormatada() {
+      if (!this.data) {
+        return null;
+      }
+      return format(parseISO(this.data), "dd/MM/yyyy");
+    },
+  },
+};
+</script>
+<style>
+body {
+  overflow: visible;
+}
+.container {
+  margin-top: 20px;
+  margin-bottom: 200px;
+}
+
+.print-show {
+  display: none;
+}
+
+@page {
+  size: auto;
+}
+
+@page {
+  counter-increment: page;
+  counter-reset: page 1;
+  @top-right {
+    content: "Page " counter(page) " of " counter(pages);
   }
 }
-</script>
-<style >
-@import url('../node_modules/font-awesome/css/all.css');
-.container {
-  margin-top:20px;
+
+@media print {
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+
+  .tabela-conteudo {
+    width: 100%;
+  }
+
+  .print-hide {
+    display: none;
+  }
+  .print-show {
+    display: revert;
+  }
+
+  .header,
+  .header-space,
+  .footer,
+  .footer-space {
+    height: 100px;
+  }
+  .header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+  }
+  .footer {
+    position: fixed;
+    bottom: 0;
+    counter-increment: page;
+  }
+
+  .footer::before {
+    /*content: counter(page);*/
+    content: "";
+    right: 0;
+    display: inline-block;
+    width: 100%;
+    text-align: right;
+    top: 100%;
+    white-space: nowrap;
+    z-index: 20;
+  }
+
+  .cnpj {
+    font-size: 0.7em;
+    margin: auto;
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  table {
+    font-size: 0.7em;
+  }
+
+  .primeiro-culto {
+    page-break-after: always;
+  }
 }
 </style>
