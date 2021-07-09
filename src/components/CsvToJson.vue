@@ -25,6 +25,7 @@ export default {
             'horario' :  obj[keys[6]],
             'concorda' :  obj[keys[7]],
             'subtotal' :  obj[keys[8]],
+            'total' :  obj[keys[9]],
             'preferencia' : false
           }
         }).filter(obj => obj.email !== 'TOTAL')

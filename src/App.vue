@@ -22,12 +22,10 @@ export default {
   },
   computed: {
     primeiroCulto() {
-      console.log(this.json)
-
-      return this.json.filter(i => i.horario.indexOf('1') > -1)
+      return this.json.filter(i => i.horario.indexOf('1') === 0)
     },
     segundoCulto() {
-      return this.json.filter(i => i.horario.indexOf('2') > -1)
+      return this.json.filter(i => i.horario.indexOf('2') === 0)
     }
   }
 }
