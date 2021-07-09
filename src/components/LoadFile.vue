@@ -1,17 +1,33 @@
 <template>
   <div>
-    <input class='form-control' type='file' @change='carregarArquivo($event)' accept=".csv"/>
+    <input class='form-control' type='file' @change='carregarArquivo($event)' :accept="accept"/>
   </div>
 </template>
 <script>
 import csv2json from 'csvjson-csv2json'
 export default {
+  props: {
+    accept: String,
+    type: String
+  },
   methods: {
     carregarArquivo({target}) {
 
       let fr = new FileReader()
       fr.onload = () => {
-        const json = csv2json(fr.result, {parseNumbers: true}).map((obj,index) => {
+        let json = {}
+        if(this.type === 'csv') {
+          json = this.parseCsv(fr.result)
+        }
+        if(this.type === 'json') {
+          json = JSON.parse(fr.result)
+        }
+        this.$emit('json', json)
+      }
+      fr.readAsText(target.files[0])
+    },
+    parseCsv(csv) {
+      return csv2json(csv, {parseNumbers: true}).map((obj,index) => {
 
           const keys = Object.keys(obj)
 
@@ -30,9 +46,7 @@ export default {
             'preferencia' : false
           }
         }).filter(obj => obj.email !== 'TOTAL')
-        this.$emit('json', json)
-      }
-      fr.readAsText(target.files[0])
+
     }
   }
 

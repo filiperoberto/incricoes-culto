@@ -1,15 +1,20 @@
 <template>
   <div id="app" class="container">
-    <csv-to-json @json="json = $event" class="print-hide" />
-
     <form class="print-hide">
+      <div class='mb-3'>
+        <label for="inputCsv" class="form-label">Carregar Csv</label>
+        <load-file @json="json = $event" id='inputCsv' accept='.csv' type='csv'/>
+      </div>
+      <div class='mb-3'>
+        <label for="inputJson" class="form-label">Carregar Json</label>
+        <load-file @json="load($event)" id='inputCsv' accept='.json' type='json'/>
+      </div>
       <div class="mb-3">
         <label for="dataCulto" class="form-label">Data do Culto</label>
         <input
           type="date"
           class="form-control"
           id="dataCulto"
-          aria-describedby="emailHelp"
           v-model="data"
         />
       </div>
@@ -17,7 +22,7 @@
         <label for="vagas" class="form-label">Vagas</label>
         <input type="number" class="form-control" id="vagas" v-model='vagas'/>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn btn-primary" @click.prevent.stop='salvar'>Salvar</button>
     </form>
     <table class="tabela-conteudo">
       <thead>
@@ -72,14 +77,14 @@
 </template>
 <script>
 import "bootstrap/dist/css/bootstrap.min.css";
-import CsvToJson from "./components/CsvToJson";
+import LoadFile from "./components/LoadFile";
 import Culto from "./components/Culto";
 import Cabecalho from "./components/Cabecalho";
 import { parseISO, format } from "date-fns";
 export default {
   name: "App",
   components: {
-    CsvToJson,
+    LoadFile,
     Culto,
     Cabecalho,
   },
@@ -104,6 +109,27 @@ export default {
       return format(parseISO(this.data), "dd/MM/yyyy");
     },
   },
+  methods: {
+    salvar() {
+      const inscricoes = { inscricoes: this.json, data: this.data, vagas: this.vagas }
+
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(inscricoes)));
+      element.setAttribute('download', `inscricoes-${this.data}.json`);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    },
+    load({inscricoes, data, vagas}) {
+      this.json = inscricoes
+      this.data = data
+      this.vagas = vagas
+    }
+  }
 };
 </script>
 <style>
