@@ -22,6 +22,7 @@ export default {
         if(this.type === 'json') {
           json = JSON.parse(fr.result)
         }
+        console.table(json)
         this.$emit('json', json)
       }
       fr.readAsText(target.files[0])
@@ -47,9 +48,15 @@ export default {
           }
         }).filter(obj => obj.email !== 'TOTAL')
         .sort(
-          (a, b) =>
-            parseInt(a.vinculo.split("-")[0].trim()) -
-            parseInt(b.vinculo.split("-")[0].trim())
+          (a, b) => {
+            const vinculoA = parseInt(a.vinculo.split("-")[0].trim())
+            const vinculoB = parseInt(b.vinculo.split("-")[0].trim())
+            const horarioA = parseInt(a.horario.charAt(0))
+            const horarioB = parseInt(b.horario.charAt(0))
+
+            return horarioA - horarioB || vinculoA - vinculoB
+          }
+            
         );
 
     }

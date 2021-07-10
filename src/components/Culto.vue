@@ -6,7 +6,7 @@
     </div>
     <div class='lista'>
       <h6>LISTA DE ESPERA</h6>
-      <tabela-inscricoes :inscricoes='reserva' :total='totalreserva'/>
+      <tabela-inscricoes :inscricoes='reserva' :total='totalreserva' @up='subir($event)' @down='descer($event)'/>
     </div>
   </div>
 </template>
