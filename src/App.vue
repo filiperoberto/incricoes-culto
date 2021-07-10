@@ -1,34 +1,57 @@
 <template>
   <div id="app" class="container">
     <form class="print-hide">
-      <div class='mb-3'>
-        <label for="inputCsv" class="form-label">Carregar Csv</label>
-        <load-file @json="json = $event" id='inputCsv' accept='.csv' type='csv'/>
-      </div>
-      <div class='mb-3'>
-        <label for="inputJson" class="form-label">Carregar Json</label>
-        <load-file @json="load($event)" id='inputCsv' accept='.json' type='json'/>
-      </div>
       <div class="mb-3">
-        <label for="dataCulto" class="form-label">Data do Culto</label>
-        <input
-          type="date"
-          class="form-control"
-          id="dataCulto"
-          v-model="data"
+        <label for="inputCsv" class="form-label">Carregar Csv</label>
+        <load-file
+          @json="json = $event"
+          id="inputCsv"
+          accept=".csv"
+          type="csv"
         />
       </div>
       <div class="mb-3">
+        <label for="inputJson" class="form-label">Carregar Json</label>
+        <load-file
+          @json="load($event)"
+          id="inputCsv"
+          accept=".json"
+          type="json"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="dataCulto" class="form-label">Data do Culto</label>
+        <input type="date" class="form-control" id="dataCulto" v-model="data" />
+      </div>
+      <div class="mb-3">
         <label for="vagas" class="form-label">Vagas</label>
-        <input type="number" class="form-control" id="vagas" v-model='vagas'/>
+        <input type="number" class="form-control" id="vagas" v-model="vagas" />
       </div>
-      <button type="submit" class="btn btn-primary" @click.prevent.stop='salvar'>Salvar</button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        @click.prevent.stop="salvar"
+      >
+        Salvar
+      </button>
     </form>
-    <div class='row mt-2 print-hide'>
-      <div class='col-2'>
-        <button type="submit" class="btn btn-primary" @click='add'>Adicionar Inscrição</button>
+    <div class="row mt-2 print-hide">
+      <div class="col-2">
+        <button
+          type="submit"
+          class="btn"
+          :disabled="copiado"
+          :class="{ 'btn-success': copiado, 'btn-secondary': !copiado }"
+          @click="copyEmails"
+          v-text="copiado ? 'Copiado!' : 'Copiar E-mails'"
+        ></button>
       </div>
-    </div> 
+      <div class="col-2">
+        <button type="submit" class="btn btn-secondary" @click="add">
+          Adicionar Inscrição
+        </button>
+      </div>
+    </div>
     <table class="tabela-conteudo">
       <thead>
         <tr>
@@ -41,22 +64,24 @@
         <tr>
           <td>
             <div class="content">
-              <culto class="primeiro-culto culto"
+              <culto
+                class="primeiro-culto culto"
                 :inscricoes="primeiroCulto"
                 v-if="primeiroCulto.length"
                 :data="dataFormatada"
-                :vagas='vagas'
-                @up='subir($event)'
-                @down='descer($event)'
+                :vagas="vagas"
+                @up="subir($event)"
+                @down="descer($event)"
                 horario="09h00"
               />
-              <culto class="culto"
+              <culto
+                class="culto"
                 :inscricoes="segundoCulto"
                 v-if="segundoCulto.length"
                 :data="dataFormatada"
-                :vagas='vagas'
-                @up='subir($event)'
-                @down='descer($event)'
+                :vagas="vagas"
+                @up="subir($event)"
+                @down="descer($event)"
                 horario="10h30"
               />
             </div>
@@ -101,7 +126,8 @@ export default {
     return {
       json: [],
       data: null,
-      vagas: 60
+      vagas: 60,
+      copiado: false,
     };
   },
   computed: {
@@ -120,46 +146,77 @@ export default {
   },
   methods: {
     salvar() {
-      const inscricoes = { inscricoes: this.json, data: this.data, vagas: this.vagas }
+      const inscricoes = {
+        inscricoes: this.json,
+        data: this.data,
+        vagas: this.vagas,
+      };
 
-      const element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(inscricoes)));
-      element.setAttribute('download', `inscricoes-${this.data}.json`);
+      const element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," +
+          encodeURIComponent(JSON.stringify(inscricoes))
+      );
+      element.setAttribute("download", `inscricoes-${this.data}.json`);
 
-      element.style.display = 'none';
+      element.style.display = "none";
       document.body.appendChild(element);
 
       element.click();
 
       document.body.removeChild(element);
     },
-    load({inscricoes, data, vagas}) {
-      this.json = inscricoes
-      this.data = data
-      this.vagas = vagas
+    load({ inscricoes, data, vagas }) {
+      this.json = inscricoes;
+      this.data = data;
+      this.vagas = vagas;
     },
-    subir({item}) {
-      const index = this.json.map(v => v.index).indexOf(item.index)
-      this.move(index, index-1)
+    subir({ item }) {
+      const index = this.json.map((v) => v.index).indexOf(item.index);
+      this.move(index, index - 1);
     },
-    descer({item}) {
-      const index = this.json.map(v => v.index).indexOf(item.index)
-      this.move(index, index+1)
+    descer({ item }) {
+      const index = this.json.map((v) => v.index).indexOf(item.index);
+      this.move(index, index + 1);
     },
     move(from, to) {
-      if(to < 0) {
-        return
+      if (to < 0) {
+        return;
       }
-      if(to >= this.json.length) {
-        return
+      if (to >= this.json.length) {
+        return;
       }
       const elem = this.json.splice(from, 1)[0];
       this.json.splice(to, 0, elem);
     },
     add() {
-      this.json.push({  index: this.json.length, horario: '1º culto, às 09h00', total: 0 })
-    }
-  }
+      this.json.push({
+        index: this.json.length,
+        horario: "1º culto, às 09h00",
+        total: 0,
+      });
+    },
+    copyEmails() {
+      const emails = this.json
+        .map((i) => i.email)
+        .filter((e) => e !== "")
+        .filter((item, pos, self) => self.indexOf(item) == pos)
+        .join(";");
+
+      navigator.clipboard.writeText(emails).then(
+        () => {
+          this.copiado = true;
+          setTimeout(() => {
+            this.copiado = false;
+          }, 5000);
+        },
+        function (err) {
+          console.error("Async: Could not copy text: ", err);
+        }
+      );
+    },
+  },
 };
 </script>
 <style>

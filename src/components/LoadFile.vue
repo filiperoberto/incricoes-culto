@@ -22,7 +22,6 @@ export default {
         if(this.type === 'json') {
           json = JSON.parse(fr.result)
         }
-        console.table(json)
         this.$emit('json', json)
       }
       fr.readAsText(target.files[0])
