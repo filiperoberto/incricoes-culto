@@ -53,8 +53,10 @@
         </td>
         <td class="print-hide email">{{ inscricao.email }}</td>
         <td class="print-hide">
-          <span class="badge bg-primary" v-if="inscricao.horario === '1º culto, às 09h00'">1º</span>
-          <span class="badge bg-success" v-else>2º</span>
+          <select class="form-select print-hide" v-model='inscricao.horario'>
+            <option value="1º culto, às 09h00">1º</option>
+              <option value="2º culto, às 10h30">2º</option>
+          </select>
         </td>
         <td class="print-hide">
           <span class="badge" :class="{'bg-success' : inscricao.concorda === 'Sim','bg-danger' : inscricao.concorda === 'Não'}">{{ inscricao.concorda }}</span>
@@ -128,6 +130,9 @@ export default {
 };
 </script>
 <style scoped>
+  thead {
+    -webkit-print-color-adjust: exact; 
+  }
 @media screen {
   .nome-completo {
     width: 200px;

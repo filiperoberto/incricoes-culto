@@ -24,6 +24,11 @@
       </div>
       <button type="submit" class="btn btn-primary" @click.prevent.stop='salvar'>Salvar</button>
     </form>
+    <div class='row mt-2 print-hide'>
+      <div class='col-2'>
+        <button type="submit" class="btn btn-primary" @click='add'>Adicionar Inscrição</button>
+      </div>
+    </div> 
     <table class="tabela-conteudo">
       <thead>
         <tr>
@@ -41,6 +46,8 @@
                 v-if="primeiroCulto.length"
                 :data="dataFormatada"
                 :vagas='vagas'
+                @up='subir($event)'
+                @down='descer($event)'
                 horario="09h00"
               />
               <culto class="culto"
@@ -48,6 +55,8 @@
                 v-if="segundoCulto.length"
                 :data="dataFormatada"
                 :vagas='vagas'
+                @up='subir($event)'
+                @down='descer($event)'
                 horario="10h30"
               />
             </div>
@@ -128,6 +137,27 @@ export default {
       this.json = inscricoes
       this.data = data
       this.vagas = vagas
+    },
+    subir({item}) {
+      const index = this.json.map(v => v.index).indexOf(item.index)
+      this.move(index, index-1)
+    },
+    descer({item}) {
+      const index = this.json.map(v => v.index).indexOf(item.index)
+      this.move(index, index+1)
+    },
+    move(from, to) {
+      if(to < 0) {
+        return
+      }
+      if(to >= this.json.length) {
+        return
+      }
+      const elem = this.json.splice(from, 1)[0];
+      this.json.splice(to, 0, elem);
+    },
+    add() {
+      this.json.push({  index: this.json.length, horario: '1º culto, às 09h00', total: 0 })
     }
   }
 };
@@ -221,7 +251,7 @@ body {
   }
 
   table {
-    font-size: 0.7em;
+    font-size: 0.9em;
   }
 
   .primeiro-culto {

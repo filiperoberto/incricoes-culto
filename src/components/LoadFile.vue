@@ -46,6 +46,11 @@ export default {
             'preferencia' : false
           }
         }).filter(obj => obj.email !== 'TOTAL')
+        .sort(
+          (a, b) =>
+            parseInt(a.vinculo.split("-")[0].trim()) -
+            parseInt(b.vinculo.split("-")[0].trim())
+        );
 
     }
   }

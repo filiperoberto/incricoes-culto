@@ -83,34 +83,14 @@ export default {
   },
 
   methods: {
-    subir({item}) {
-      delete item.acumuladoReserva
-      const index = this.value.map(v => v.index).indexOf(item.index)
-      this.move(index, index-1)
+    subir(event) {
+      this.$emit('up', event)
     },
-    descer({item}) {
-      delete item.acumuladoReserva
-      const index = this.value.map(v => v.index).indexOf(item.index)
-      this.move(index, index+1)
-    },
-    move(from, to) {
-      if(to < 0) {
-        return
-      }
-      if(to >= this.value.length) {
-        return
-      }
-      const elem = this.value.splice(from, 1)[0];
-      this.value.splice(to, 0, elem);
+    descer(event) {
+      this.$emit('down', event)
     },
     carregarInscricoes () {
-
-      
-      this.value = [...this.inscricoes].sort(
-          (a, b) =>
-            parseInt(a.vinculo.split("-")[0].trim()) -
-            parseInt(b.vinculo.split("-")[0].trim())
-        );
+      this.value = [...this.inscricoes]
     }
   },
 
@@ -119,8 +99,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-  thead {
-    -webkit-print-color-adjust: exact; 
-  }
-</style>
