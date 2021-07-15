@@ -1,7 +1,7 @@
 <template>
   <table
     class="
-      table table-striped table-hover table-responsive table-bordered
+      table table-hover table-responsive table-bordered
       border-dark
       table-sm
     "
@@ -25,7 +25,7 @@
       <tr
         v-for="(inscricao, index) in inscricoes"
         :class="{
-          'table-success': inscricao.preferencia,
+          'preferencia': inscricao.preferencia,
           'table-danger print-hide': inscricao.remover,
         }"
         :key="`inscricao-${index}`"
@@ -42,7 +42,7 @@
             <option value="2 - Música">2 - Música</option>
             <option value="3 - Recepção">3 - Recepção</option>
             <option value="4 - Som/Imagem">4 - Som/Imagem</option>
-            <option value="5 - Membro ">5 - Membro </option>
+            <option value="5 - Membro">5 - Membro </option>
             <option value="6 - Visitante">6 - Visitante</option>
           </select>
         </td>
@@ -133,7 +133,12 @@ export default {
   thead {
     -webkit-print-color-adjust: exact; 
   }
+
 @media screen {
+
+  .preferencia {
+    background-color: rgb(110, 196, 110);
+  }
   .nome-completo {
     width: 200px;
   }

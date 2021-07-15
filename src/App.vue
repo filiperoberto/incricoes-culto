@@ -25,32 +25,16 @@
       </div>
       <div class="mb-3">
         <label for="vagas" class="form-label">Vagas</label>
-        <input type="number" class="form-control" id="vagas" v-model="vagas" />
+        <input type="number" class="form-control" id="vagas" v-model.number="vagas" />
       </div>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        @click.prevent.stop="salvar"
-      >
-        Salvar
-      </button>
     </form>
-    <div class="row mt-2 print-hide">
-      <div class="col-2">
-        <button
-          type="submit"
-          class="btn"
-          :disabled="copiado"
-          :class="{ 'btn-success': copiado, 'btn-secondary': !copiado }"
-          @click="copyEmails"
-          v-text="copiado ? 'Copiado!' : 'Copiar E-mails'"
-        ></button>
-      </div>
-      <div class="col-2">
-        <button type="submit" class="btn btn-secondary" @click="add">
-          Adicionar Inscrição
-        </button>
-      </div>
+    <div class='print-hide'>
+    <div class="d-grid gap-2 col-3">
+      <button class="btn btn-success" type="button" @click.prevent.stop="salvar">Salvar</button>
+      <button class="btn" type="button" :disabled="copiado" @click="copyEmails" :class="{ 'btn-success': copiado, 'btn-secondary': !copiado }" v-text="copiado ? 'Copiado!' : 'Copiar E-mails'"></button>
+      <button class="btn btn-warning" @click="add" type="button">Adicionar Inscrição</button>
+      <button class="btn btn-primary" @click="print" type="button">Gerar PDF</button>
+    </div>
     </div>
     <table class="tabela-conteudo">
       <thead>
@@ -187,7 +171,7 @@ export default {
       if (to >= this.json.length) {
         return;
       }
-      const elem = this.json.splice(from, 1)[0];
+      const [elem] = this.json.splice(from, 1);
       this.json.splice(to, 0, elem);
     },
     add() {
@@ -204,18 +188,43 @@ export default {
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .join(";");
 
-      navigator.clipboard.writeText(emails).then(
+      this.copyToClipboard(emails).then(
         () => {
           this.copiado = true;
           setTimeout(() => {
             this.copiado = false;
           }, 5000);
-        },
-        function (err) {
+        })
+        .catch(err => {
           console.error("Async: Could not copy text: ", err);
-        }
-      );
+        })
     },
+    copyToClipboard(textToCopy) {
+    // navigator clipboard api needs a secure context (https)
+    if (navigator.clipboard && window.isSecureContext) {
+        // navigator clipboard api method'
+        return navigator.clipboard.writeText(textToCopy);
+    } else {
+        // text area method
+        let textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        // make the textarea out of viewport
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        return new Promise((res, rej) => {
+            // here the magic happens
+            document.execCommand('copy') ? res() : rej();
+            textArea.remove();
+        });
+    }
+    },
+    print () {
+      window.print();
+    }
   },
 };
 </script>
