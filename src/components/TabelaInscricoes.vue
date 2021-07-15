@@ -26,6 +26,7 @@
         v-for="(inscricao, index) in inscricoes"
         :class="{
           'preferencia': inscricao.preferencia,
+          'sair': inscricao.sair,
           'table-danger print-hide': inscricao.remover,
         }"
         :key="`inscricao-${index}`"
@@ -79,6 +80,12 @@
             @click="inscricao.remover = !inscricao.remover"
           >
             Remover
+          </button>
+          <button
+            class="btn btn-warning btn-block col-12 mt-2"
+            @click="inscricao.sair = !inscricao.sair"
+          >
+            Pediu P/ Sair
           </button>
           <button
             class="btn btn-success btn-block col-12 mt-2"
@@ -135,6 +142,10 @@ export default {
   }
 
 @media screen {
+
+  .sair {
+    background-color: rgb(187, 211, 81);
+  }
 
   .preferencia {
     background-color: rgb(110, 196, 110);
