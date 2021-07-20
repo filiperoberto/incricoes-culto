@@ -183,6 +183,7 @@ export default {
     },
     copyEmails() {
       const emails = this.json
+        .filter(m => m.vinculo.indexOf('6') > -1) //visitante
         .map((i) => i.email)
         .filter((e) => e !== "")
         .filter((item, pos, self) => self.indexOf(item) == pos)
