@@ -183,7 +183,7 @@ export default {
       document.body.removeChild(element);
     },
     load({ inscricoes, data, vagas }) {
-      this.json = inscricoes;
+      this.json = inscricoes || [];
       this.data = data;
       this.vagas = vagas;
     },
