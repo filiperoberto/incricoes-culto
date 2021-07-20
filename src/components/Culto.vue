@@ -9,6 +9,7 @@
         :total="totalPreenchidas"
         @up="subir($event)"
         @down="descer($event)"
+        @trocaHorario="$emit('trocaHorario', $event)"
       />
     </div>
     <div class="lista">
@@ -18,6 +19,7 @@
         :total="totalreserva"
         @up="subir($event)"
         @down="descer($event)"
+        @trocaHorario="$emit('trocaHorario', $event)"
       />
     </div>
   </div>
@@ -64,7 +66,9 @@ export default {
       let acumulado = 0;
 
       return this.value.map((v) => {
-        let total = parseInt(this.totalItem(v));
+
+        v.total = this.totalItem(v)
+        let total = parseInt(v.total);
 
         if (!v.remover && !isNaN(total)) {
           acumulado += total;
@@ -91,13 +95,13 @@ export default {
     totalPreenchidas() {
       return this.vagasPreenchidas
         .filter((v) => !v.remover)
-        .map((a) => a.total)
+        .map((a) => parseInt(a.total))
         .reduce((a, b) => a + b, 0);
     },
     totalreserva() {
       return this.reserva
         .filter((v) => !v.remover)
-        .map((a) => a.total)
+        .map((a) => parseInt(a.total))
         .reduce((a, b) => a + b, 0);
     },
   },

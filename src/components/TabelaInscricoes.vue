@@ -13,7 +13,7 @@
         <th class='vinculo'>Vínculo IBRVN</th>
         <th class="print-hide" title="Quantidade integrantes">Qtd Int.</th>
         <th class="nome-completo">Acompanhantes – Cônjuge/Filho(s)</th>
-        <th class="print-hide">Email</th>
+        <th v-if='false' class="print-hide">Email</th>
         <th class="print-hide">Horario Culto</th>
         <th class="print-hide">Concorda</th>
         <th class="vinculo">Total</th>
@@ -55,9 +55,9 @@
           <span class="print-show">{{ capitalize(inscricao.integrantes) }}</span>
           <input type="text" class='form-control form-text print-hide' v-model='inscricao.integrantes'/>
         </td>
-        <td class="print-hide email">{{ inscricao.email }}</td>
+        <td class="print-hide email" v-if='false'>{{ inscricao.email }}</td>
         <td class="print-hide">
-          <select class="form-select print-hide" v-model='inscricao.horario'>
+          <select class="form-select print-hide" v-model='inscricao.horario' :disabled="inscricao.concorda !== 'Sim'" @change='trocaHorario(inscricao, index)'>
             <option value="1º culto, às 09h00">1º</option>
             <option value="2º culto, às 10h30">2º</option>
           </select>
@@ -108,13 +108,17 @@
       </tr>
       <tr class="print-hide">
         <td colspan="8" class="text-end"><strong>TOTAL</strong></td>
-        <td class="text-center"><strong>{{ total }}</strong></td>
+        <td class="text-center" >
+          <strong v-if='!isNaN(total)'>{{ total }}</strong>
+          <span class="badge bg-danger" v-else>Revisar</span>
+        </td>
         <td colspan="2"></td>
       </tr>
       <tr class="print-show">
         <td colspan="3" class="text-end"><strong>TOTAL</strong></td>
         <td class="text-center">
-          <strong>{{ total }}</strong>
+          <strong v-if='!isNaN(total)'>{{ total }}</strong>
+          <span v-else>?</span>
         </td>
       </tr>
     </tbody>
@@ -147,6 +151,9 @@ export default {
     },
     capitalize(palavra) {
       return capitalize(palavra)
+    },
+    trocaHorario(item, index) {
+      this.$emit('trocaHorario', {item, index})
     }
   }
 };

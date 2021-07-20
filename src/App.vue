@@ -25,16 +25,39 @@
       </div>
       <div class="mb-3">
         <label for="vagas" class="form-label">Vagas</label>
-        <input type="number" class="form-control" id="vagas" v-model.number="vagas" />
+        <input
+          type="number"
+          class="form-control"
+          id="vagas"
+          v-model.number="vagas"
+        />
       </div>
     </form>
-    <div class='print-hide'>
-    <div class="d-grid gap-2 col-3">
-      <button class="btn btn-success" type="button" @click.prevent.stop="salvar">Salvar</button>
-      <button class="btn" type="button" :disabled="copiado" @click="copyEmails" :class="{ 'btn-success': copiado, 'btn-secondary': !copiado }" v-text="copiado ? 'Copiado!' : 'Copiar E-mails'"></button>
-      <button class="btn btn-warning" @click="add" type="button">Adicionar Inscrição</button>
-      <button class="btn btn-primary" @click="print" type="button">Gerar PDF</button>
-    </div>
+    <div class="print-hide">
+      <div class="d-grid gap-2 col-3">
+        <button
+          class="btn btn-success"
+          type="button"
+          @click.prevent.stop="salvar"
+        >
+          Salvar
+        </button>
+        <button
+          class="btn"
+          type="button"
+          :disabled="copiado"
+          @click="copyEmails"
+          :class="{ 'btn-success': copiado, 'btn-secondary': !copiado }"
+          v-text="copiado ? 'Copiado!' : 'Copiar E-mails'"
+        ></button>
+        <button class="btn btn-warning" @click="add" type="button">
+          Adicionar Inscrição
+        </button>
+        <button class="btn btn-primary" @click="print" type="button">
+          Gerar PDF
+        </button>
+        <button class="btn btn-danger" type="button" @click="clearConfirm">Limpar</button>
+      </div>
     </div>
     <table class="tabela-conteudo">
       <thead>
@@ -56,6 +79,7 @@
                 :vagas="vagas"
                 @up="subir($event)"
                 @down="descer($event)"
+                @trocaHorario="trocaHorario($event)"
                 horario="09h00"
               />
               <culto
@@ -66,6 +90,7 @@
                 :vagas="vagas"
                 @up="subir($event)"
                 @down="descer($event)"
+                @trocaHorario="trocaHorario($event)"
                 horario="10h30"
               />
             </div>
@@ -104,7 +129,7 @@ export default {
   components: {
     LoadFile,
     Culto,
-    Cabecalho,
+    Cabecalho
   },
   data() {
     return {
@@ -112,6 +137,7 @@ export default {
       data: null,
       vagas: 60,
       copiado: false,
+      saveInterval: null
     };
   },
   computed: {
@@ -129,12 +155,17 @@ export default {
     },
   },
   methods: {
-    salvar() {
-      const inscricoes = {
+    empacotar() {
+      return {
         inscricoes: this.json,
         data: this.data,
         vagas: this.vagas,
       };
+    },
+    salvar() {
+      const inscricoes = this.empacotar()
+
+      this.$store.dispatch("saveJson", inscricoes);
 
       const element = document.createElement("a");
       element.setAttribute(
@@ -164,6 +195,14 @@ export default {
       const index = this.json.map((v) => v.index).indexOf(item.index);
       this.move(index, index + 1);
     },
+    trocaHorario({ item }) {
+      const index = this.json.map((v) => v.index).indexOf(item.index);
+      let to = this.primeiroCulto.length;
+      if (item.horario.indexOf("2") > -1) {
+        to = this.json.length - 1;
+      }
+      this.move(index, to);
+    },
     move(from, to) {
       if (to < 0) {
         return;
@@ -183,29 +222,29 @@ export default {
     },
     copyEmails() {
       const emails = this.json
-        .filter(m => m.vinculo.indexOf('6') > -1) //visitante
+        .filter((m) => m.vinculo.indexOf("6") > -1) //visitante
         .map((i) => i.email)
         .filter((e) => e !== "")
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .join(";");
 
-      this.copyToClipboard(emails).then(
-        () => {
+      this.copyToClipboard(emails)
+        .then(() => {
           this.copiado = true;
           setTimeout(() => {
             this.copiado = false;
           }, 5000);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Async: Could not copy text: ", err);
-        })
+        });
     },
     copyToClipboard(textToCopy) {
-    // navigator clipboard api needs a secure context (https)
-    if (navigator.clipboard && window.isSecureContext) {
+      // navigator clipboard api needs a secure context (https)
+      if (navigator.clipboard && window.isSecureContext) {
         // navigator clipboard api method'
         return navigator.clipboard.writeText(textToCopy);
-    } else {
+      } else {
         // text area method
         let textArea = document.createElement("textarea");
         textArea.value = textToCopy;
@@ -217,15 +256,39 @@ export default {
         textArea.focus();
         textArea.select();
         return new Promise((res, rej) => {
-            // here the magic happens
-            document.execCommand('copy') ? res() : rej();
-            textArea.remove();
+          // here the magic happens
+          document.execCommand("copy") ? res() : rej();
+          textArea.remove();
         });
-    }
+      }
     },
-    print () {
+    print() {
       window.print();
+    },
+    clearConfirm() {
+      if(window.confirm('Tem certeza que deseja limpar?')) {
+        this.clear()
+      }
+    },
+    clear() {
+      this.json = []
+      this.data = null
+      this.vagas = 60
+      const inscricoes = this.empacotar()
+      this.$store.dispatch("saveJson", inscricoes);
     }
+  },
+  mounted() {
+    this.load(this.$store.state.json)
+
+    clearInterval(this.saveInterval)
+    this.saveInterval = setInterval(() => {
+      const inscricoes = this.empacotar()
+      this.$store.dispatch("saveJson", inscricoes);
+    },5000)
+  },
+  beforeUnmount() {
+    clearInterval(this.saveInterval)
   },
 };
 </script>
