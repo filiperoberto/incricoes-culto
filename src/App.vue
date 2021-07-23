@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="container">
-    <div class="row">
-      <form class="print-hide col-6">
+    <div class="row print-hide ">
+      <form class="col-6">
         <div class="mb-3">
           <label for="inputCsv" class="form-label">Carregar Csv</label>
           <load-file
@@ -119,6 +119,10 @@
         </tr>
       </tfoot>
     </table>
+    <div class="print-hide">
+      <hr/>
+      <resumo :inscricoes='json'/>
+    </div>
 
     <div class="print-show header">
       <cabecalho />
@@ -137,6 +141,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import LoadFile from "./components/LoadFile";
 import Culto from "./components/Culto";
 import Cabecalho from "./components/Cabecalho";
+import Resumo from "./components/Resumo";
 import Todo from "./components/Todo";
 import { parseISO, format } from "date-fns";
 export default {
@@ -146,6 +151,7 @@ export default {
     Culto,
     Cabecalho,
     Todo,
+    Resumo
   },
   data() {
     return {
