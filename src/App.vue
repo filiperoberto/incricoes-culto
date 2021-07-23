@@ -1,62 +1,76 @@
 <template>
   <div id="app" class="container">
-    <form class="print-hide">
-      <div class="mb-3">
-        <label for="inputCsv" class="form-label">Carregar Csv</label>
-        <load-file
-          @json="json = $event"
-          id="inputCsv"
-          accept=".csv"
-          type="csv"
-        />
+    <div class="row">
+      <form class="print-hide col-6">
+        <div class="mb-3">
+          <label for="inputCsv" class="form-label">Carregar Csv</label>
+          <load-file
+            @json="json = $event"
+            id="inputCsv"
+            accept=".csv"
+            type="csv"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="inputJson" class="form-label">Carregar Json</label>
+          <load-file
+            @json="load($event)"
+            id="inputCsv"
+            accept=".json"
+            type="json"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="dataCulto" class="form-label">Data do Culto</label>
+          <input
+            type="date"
+            class="form-control"
+            id="dataCulto"
+            v-model="data"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="vagas" class="form-label">Vagas</label>
+          <input
+            type="number"
+            class="form-control"
+            id="vagas"
+            v-model.number="vagas"
+          />
+        </div>
+      </form>
+      <div class="col-6">
+        <todo v-model="todo" />
       </div>
-      <div class="mb-3">
-        <label for="inputJson" class="form-label">Carregar Json</label>
-        <load-file
-          @json="load($event)"
-          id="inputCsv"
-          accept=".json"
-          type="json"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="dataCulto" class="form-label">Data do Culto</label>
-        <input type="date" class="form-control" id="dataCulto" v-model="data" />
-      </div>
-      <div class="mb-3">
-        <label for="vagas" class="form-label">Vagas</label>
-        <input
-          type="number"
-          class="form-control"
-          id="vagas"
-          v-model.number="vagas"
-        />
-      </div>
-    </form>
-    <div class="print-hide">
-      <div class="d-grid gap-2 col-3">
-        <button
-          class="btn btn-success"
-          type="button"
-          @click.prevent.stop="salvar"
-        >
-          Salvar
-        </button>
-        <button
-          class="btn"
-          type="button"
-          :disabled="copiado"
-          @click="copyEmails"
-          :class="{ 'btn-success': copiado, 'btn-secondary': !copiado }"
-          v-text="copiado ? 'Copiado!' : 'Copiar E-mails'"
-        ></button>
-        <button class="btn btn-warning" @click="add" type="button">
-          Adicionar Inscrição
-        </button>
-        <button class="btn btn-primary" @click="print" type="button">
-          Gerar PDF
-        </button>
-        <button class="btn btn-danger" type="button" @click="clearConfirm">Limpar</button>
+    </div>
+    <div class="print-hide row">
+      <div class="col-3">
+        <div class="d-grid gap-2">
+          <button
+            class="btn btn-success"
+            type="button"
+            @click.prevent.stop="salvar"
+          >
+            Salvar
+          </button>
+          <button
+            class="btn"
+            type="button"
+            :disabled="copiado"
+            @click="copyEmails"
+            :class="{ 'btn-success': copiado, 'btn-secondary': !copiado }"
+            v-text="copiado ? 'Copiado!' : 'Copiar E-mails'"
+          ></button>
+          <button class="btn btn-warning" @click="add" type="button">
+            Adicionar Inscrição
+          </button>
+          <button class="btn btn-primary" @click="print" type="button">
+            Gerar PDF
+          </button>
+          <button class="btn btn-danger" type="button" @click="clearConfirm">
+            Limpar
+          </button>
+        </div>
       </div>
     </div>
     <table class="tabela-conteudo">
@@ -123,21 +137,24 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import LoadFile from "./components/LoadFile";
 import Culto from "./components/Culto";
 import Cabecalho from "./components/Cabecalho";
+import Todo from "./components/Todo";
 import { parseISO, format } from "date-fns";
 export default {
   name: "App",
   components: {
     LoadFile,
     Culto,
-    Cabecalho
+    Cabecalho,
+    Todo,
   },
   data() {
     return {
       json: [],
       data: null,
       vagas: 60,
+      todo: [],
       copiado: false,
-      saveInterval: null
+      saveInterval: null,
     };
   },
   computed: {
@@ -160,10 +177,11 @@ export default {
         inscricoes: this.json,
         data: this.data,
         vagas: this.vagas,
+        todo: this.todo,
       };
     },
     salvar() {
-      const inscricoes = this.empacotar()
+      const inscricoes = this.empacotar();
 
       this.$store.dispatch("saveJson", inscricoes);
 
@@ -182,10 +200,11 @@ export default {
 
       document.body.removeChild(element);
     },
-    load({ inscricoes, data, vagas }) {
-      this.json = inscricoes || [];
+    load({ inscricoes, data, vagas, todo }) {
+      this.json = inscricoes || []
       this.data = data;
       this.vagas = vagas;
+      this.todo = todo || []
     },
     subir({ item }) {
       const index = this.json.map((v) => v.index).indexOf(item.index);
@@ -266,29 +285,30 @@ export default {
       window.print();
     },
     clearConfirm() {
-      if(window.confirm('Tem certeza que deseja limpar?')) {
-        this.clear()
+      if (window.confirm("Tem certeza que deseja limpar?")) {
+        this.clear();
       }
     },
     clear() {
-      this.json = []
-      this.data = null
-      this.vagas = 60
-      const inscricoes = this.empacotar()
+      this.json = [];
+      this.data = null;
+      this.vagas = 60;
+      this.todo = []
+      const inscricoes = this.empacotar();
       this.$store.dispatch("saveJson", inscricoes);
-    }
+    },
   },
   mounted() {
-    this.load(this.$store.state.json)
+    this.load(this.$store.state.json);
 
-    clearInterval(this.saveInterval)
+    clearInterval(this.saveInterval);
     this.saveInterval = setInterval(() => {
-      const inscricoes = this.empacotar()
+      const inscricoes = this.empacotar();
       this.$store.dispatch("saveJson", inscricoes);
-    },5000)
+    }, 5000);
   },
   beforeUnmount() {
-    clearInterval(this.saveInterval)
+    clearInterval(this.saveInterval);
   },
 };
 </script>
