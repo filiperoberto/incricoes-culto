@@ -1,18 +1,36 @@
 <template>
   <div class="d-grid gap-2">
+    <label>Tarefas</label> 
     <form @submit.prevent.stop="addItem">
-      <div class="mb-3">
-        <label for="todoItem" class="form-label">Tarefas</label>
-        <input type="text" class="form-control" id="todoItem" v-model="text" />
+      <div class="input-group mb-3">
+        <input
+          id='todoItem'
+          type="text"
+          class="form-control"
+          placeholder="Tarefa"
+          v-model="text"
+          aria-label="Tarefa"
+          aria-describedby="button-addon2"
+        />
+        <button
+          class="btn btn-outline-primary"
+          :disabled="!text"
+          type="button"
+          id="button-addon2"
+        >
+          Adicionar
+        </button>
       </div>
-      <button type="submit" :disabled="!text" class="btn btn-primary">
-        Adicionar Tarefa
-      </button>
     </form>
     <div class="list-group">
       <template v-for="(item, index) in mutateValue">
         <div
-          class="list-group-item d-flex justify-content-between align-items-center"
+          class="
+            list-group-item
+            d-flex
+            justify-content-between
+            align-items-center
+          "
           :key="`item-${index}`"
           v-if="!item.remove || !item.done"
         >
@@ -30,7 +48,7 @@
             {{ item.value }}
           </label>
           <button
-            v-if='item.done'
+            v-if="item.done"
             type="submit"
             class="btn btn-sm btn-danger"
             @click="item.remove = true"
