@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="container">
-    <div class="row print-hide ">
+    <div class="row print-hide">
       <form class="col-6">
         <div class="mb-3">
           <label for="inputCsv" class="form-label">Carregar Csv</label>
@@ -70,6 +70,13 @@
           <button class="btn btn-danger" type="button" @click="clearConfirm">
             Limpar
           </button>
+          <button
+            class="btn btn-outline-dark"
+            type="button"
+            @click="copiarTextoInscricoesAbertas"
+          >
+            Texto Inscrições Abertas
+          </button>
         </div>
       </div>
     </div>
@@ -120,8 +127,12 @@
       </tfoot>
     </table>
     <div class="print-hide">
-      <hr/>
-      <resumo :inscricoes='json'/>
+      <hr />
+      <resumo :inscricoes="json" />
+    </div>
+    <div class="print-hide" v-if='data'>
+      <hr />
+      <textos-padrao :data='data' />
     </div>
 
     <div class="print-show header">
@@ -143,6 +154,7 @@ import Culto from "./components/Culto";
 import Cabecalho from "./components/Cabecalho";
 import Resumo from "./components/Resumo";
 import Todo from "./components/Todo";
+import TextosPadrao from "./components/TextosPadrao";
 import { parseISO, format } from "date-fns";
 export default {
   name: "App",
@@ -151,7 +163,8 @@ export default {
     Culto,
     Cabecalho,
     Todo,
-    Resumo
+    Resumo,
+    TextosPadrao
   },
   data() {
     return {
@@ -186,6 +199,10 @@ export default {
         todo: this.todo,
       };
     },
+    async copiarTextoInscricoesAbertas() {
+      const texto = ``;
+      await this.copyToClipboard(texto);
+    },
     salvar() {
       const inscricoes = this.empacotar();
 
@@ -207,10 +224,10 @@ export default {
       document.body.removeChild(element);
     },
     load({ inscricoes, data, vagas, todo }) {
-      this.json = inscricoes || []
+      this.json = inscricoes || [];
       this.data = data;
       this.vagas = vagas;
-      this.todo = todo || []
+      this.todo = todo || [];
     },
     subir({ item }) {
       const index = this.json.map((v) => v.index).indexOf(item.index);
@@ -264,29 +281,6 @@ export default {
           console.error("Async: Could not copy text: ", err);
         });
     },
-    copyToClipboard(textToCopy) {
-      // navigator clipboard api needs a secure context (https)
-      if (navigator.clipboard && window.isSecureContext) {
-        // navigator clipboard api method'
-        return navigator.clipboard.writeText(textToCopy);
-      } else {
-        // text area method
-        let textArea = document.createElement("textarea");
-        textArea.value = textToCopy;
-        // make the textarea out of viewport
-        textArea.style.position = "fixed";
-        textArea.style.left = "-999999px";
-        textArea.style.top = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        return new Promise((res, rej) => {
-          // here the magic happens
-          document.execCommand("copy") ? res() : rej();
-          textArea.remove();
-        });
-      }
-    },
     print() {
       window.print();
     },
@@ -299,7 +293,7 @@ export default {
       this.json = [];
       this.data = null;
       this.vagas = 60;
-      this.todo = []
+      this.todo = [];
       const inscricoes = this.empacotar();
       this.$store.dispatch("saveJson", inscricoes);
     },
