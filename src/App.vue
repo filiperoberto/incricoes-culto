@@ -310,9 +310,12 @@ body {
   margin-bottom: 200px;
 }
 
-.print-show {
-  display: none;
+@media screen {
+  .print-show {
+    display: none;
+  }
 }
+
 
 @page {
   size: auto;
@@ -347,9 +350,6 @@ body {
 
   .print-hide {
     display: none;
-  }
-  .print-show {
-    display: revert;
   }
 
   .header,
