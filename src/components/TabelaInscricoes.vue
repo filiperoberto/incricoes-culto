@@ -30,6 +30,7 @@
           'table-danger print-hide': inscricao.remover,
         }"
         :key="`inscricao-${index}`"
+        :id='`inscricao-${inscricao.index}`'
       >
         <td class="print-hide"><time :datetime="inscricao.datahora">{{ inscricao.datahora }}</time></td>
         <td class="nome-completo">

@@ -9,7 +9,17 @@
           v-for="(nome, index) in nomesRepetidos"
           :key="`repetido-${index}`"
         >
-          {{ nome.original }} => {{ nome.semelantes }}
+          <a :href="`#inscricao-${nome.original.index}`">{{
+            nome.original.nome
+          }}</a>
+          =>
+          <a
+            class="semelhante"
+            v-for="semelhante in nome.semelantes"
+            :key="semelhante.index"
+            :href="`#inscricao-${semelhante.index}`"
+            >{{ semelhante.nome }}</a
+          >
         </li>
         <li class="list-group-item disabled" v-if="!nomesRepetidos.length">
           Nenhum nome semelhante
@@ -43,16 +53,20 @@ export default {
           const semelantes = listaFiltrada
             .filter((i, index) => {
               return (
-                levenshtein(i.nome.toLowerCase(), inscricao.nome.toLowerCase()) < this.distancia &&
-                indexInscricao != index
+                levenshtein(
+                  i.nome.toLowerCase(),
+                  inscricao.nome.toLowerCase()
+                ) < this.distancia && indexInscricao != index
               );
             })
-            .map((i) => i.nome);
+            .map((i) => {
+              return { nome: i.nome, index: i.index };
+            });
 
           return {
-            original: inscricao.nome,
+            original: { nome: inscricao.nome, index: inscricao.index },
             possuiSemelhantes: semelantes.length > 0,
-            semelantes: semelantes.join(", "),
+            semelantes,
           };
         })
         .filter((i) => i.possuiSemelhantes);
@@ -60,3 +74,16 @@ export default {
   },
 };
 </script>
+<style scoped>
+.semelhante {
+  margin-right: 5px;
+}
+
+.semelhante::after {
+  content: ", ";
+}
+
+.semelhante:last-of-type::after {
+  content: "";
+}
+</style>
