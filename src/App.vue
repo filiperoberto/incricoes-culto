@@ -44,7 +44,7 @@
       </div>
     </div>
     <div class="print-hide row">
-      <div class="col-3">
+      <div class="col-lg-3 col-12">
         <div class="d-grid gap-2">
           <button
             class="btn btn-success"
@@ -130,9 +130,13 @@
       <hr />
       <resumo :inscricoes="json" />
     </div>
-    <div class="print-hide" v-if='data'>
+    <div class="print-hide" v-if="data">
       <hr />
-      <textos-padrao :data='data' />
+      <textos-padrao :data="data" />
+    </div>
+    <div class="print-hide">
+      <hr/>
+      <nomes-repetidos :json='json'/>
     </div>
 
     <div class="print-show header">
@@ -151,6 +155,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoadFile from "./components/LoadFile";
 import Culto from "./components/Culto";
+import NomesRepetidos from "./components/NomesRepetidos";
 import Cabecalho from "./components/Cabecalho";
 import Resumo from "./components/Resumo";
 import Todo from "./components/Todo";
@@ -164,7 +169,8 @@ export default {
     Cabecalho,
     Todo,
     Resumo,
-    TextosPadrao
+    TextosPadrao,
+    NomesRepetidos
   },
   data() {
     return {
@@ -174,6 +180,7 @@ export default {
       todo: [],
       copiado: false,
       saveInterval: null,
+      version: 0
     };
   },
   computed: {
@@ -188,6 +195,20 @@ export default {
         return null;
       }
       return format(parseISO(this.data), "dd/MM/yyyy");
+    }
+  },
+  watch: {
+    data() {
+      document.title = `Inscrições Culto - ${format(
+        parseISO(this.data),
+        "dd-MM-yyyy"
+      )} - v${this.version}`;
+    },
+    version() {
+      document.title = `Inscrições Culto - ${format(
+        parseISO(this.data),
+        "dd-MM-yyyy"
+      )} - v${this.version}`;
     },
   },
   methods: {
@@ -197,6 +218,7 @@ export default {
         data: this.data,
         vagas: this.vagas,
         todo: this.todo,
+        version: this.version,
       };
     },
     async copiarTextoInscricoesAbertas() {
@@ -223,10 +245,11 @@ export default {
 
       document.body.removeChild(element);
     },
-    load({ inscricoes, data, vagas, todo }) {
+    load({ inscricoes, data, vagas, todo, version }) {
       this.json = inscricoes || [];
       this.data = data;
       this.vagas = vagas;
+      this.version = version || 0;
       this.todo = todo || [];
     },
     subir({ item }) {
@@ -283,6 +306,7 @@ export default {
     },
     print() {
       window.print();
+      this.version++;
     },
     clearConfirm() {
       if (window.confirm("Tem certeza que deseja limpar?")) {
@@ -293,7 +317,9 @@ export default {
       this.json = [];
       this.data = null;
       this.vagas = 60;
+      this.version = 0;
       this.todo = [];
+
       const inscricoes = this.empacotar();
       this.$store.dispatch("saveJson", inscricoes);
     },
@@ -326,7 +352,6 @@ body {
     display: none;
   }
 }
-
 
 @page {
   size: auto;
