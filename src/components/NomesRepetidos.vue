@@ -43,7 +43,7 @@ export default {
           const semelantes = listaFiltrada
             .filter((i, index) => {
               return (
-                levenshtein(i.nome, inscricao.nome) < this.distancia &&
+                levenshtein(i.nome.toLowerCase(), inscricao.nome.toLowerCase()) < this.distancia &&
                 indexInscricao != index
               );
             })
@@ -52,7 +52,7 @@ export default {
           return {
             original: inscricao.nome,
             possuiSemelhantes: semelantes.length > 0,
-            semelantes: semelantes.join(" ,"),
+            semelantes: semelantes.join(", "),
           };
         })
         .filter((i) => i.possuiSemelhantes);
