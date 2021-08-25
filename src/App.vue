@@ -70,13 +70,6 @@
           <button class="btn btn-danger" type="button" @click="clearConfirm">
             Limpar
           </button>
-          <button
-            class="btn btn-outline-dark"
-            type="button"
-            @click="copiarTextoInscricoesAbertas"
-          >
-            Texto Inscrições Abertas
-          </button>
         </div>
       </div>
     </div>
@@ -220,10 +213,6 @@ export default {
         todo: this.todo,
         version: this.version,
       };
-    },
-    async copiarTextoInscricoesAbertas() {
-      const texto = ``;
-      await this.copyToClipboard(texto);
     },
     salvar() {
       const inscricoes = this.empacotar();
