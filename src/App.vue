@@ -128,8 +128,8 @@
       <textos-padrao :data="data" />
     </div>
     <div class="print-hide">
-      <hr/>
-      <nomes-repetidos :json='json'/>
+      <hr />
+      <nomes-repetidos :json="json" />
     </div>
 
     <div class="print-show header">
@@ -163,7 +163,7 @@ export default {
     Todo,
     Resumo,
     TextosPadrao,
-    NomesRepetidos
+    NomesRepetidos,
   },
   data() {
     return {
@@ -173,7 +173,7 @@ export default {
       todo: [],
       copiado: false,
       saveInterval: null,
-      version: 0
+      version: 0,
     };
   },
   computed: {
@@ -188,23 +188,27 @@ export default {
         return null;
       }
       return format(parseISO(this.data), "dd/MM/yyyy");
-    }
+    },
   },
   watch: {
     data() {
-      document.title = `Inscrições Culto - ${format(
-        parseISO(this.data),
-        "dd-MM-yyyy"
-      )} - v${this.version}`;
+      this.alterarTitulo();
     },
     version() {
-      document.title = `Inscrições Culto - ${format(
-        parseISO(this.data),
-        "dd-MM-yyyy"
-      )} - v${this.version}`;
+      this.alterarTitulo();
     },
   },
   methods: {
+    alterarTitulo() {
+      if (!this.data) {
+        document.title = "Inscrições Culto";
+        return;
+      }
+      document.title = `Inscrições Culto - ${format(
+        parseISO(this.data),
+        "dd-MM-yyyy"
+      )} - v${this.version}`;
+    },
     empacotar() {
       return {
         inscricoes: this.json,
