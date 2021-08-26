@@ -1,20 +1,23 @@
 <template>
   <div>
+    <h5 class="card-title">Nomes semelhantes</h5>
     <div class="card">
-      <div class="card-header">Nomes semelhantes</div>
-      <input type="number" class="form-control" v-model.number="distancia" />
+      <div class="card-header">
+        <label for="distancia" class="form-label">Distância</label>
+        <input type="number" id='distancia' class="form-control" v-model.number="distancia" />
+      </div>
       <ul class="list-group list-group-flush">
         <li
           class="list-group-item"
           v-for="(nome, index) in nomesRepetidos"
           :key="`repetido-${index}`"
         >
-          <a :href="`#inscricao-${nome.original.index}`">{{
+          <a class='btn btn-sm btn-primary' :href="`#inscricao-${nome.original.index}`">{{
             nome.original.nome
           }}</a>
-          =>
+          →
           <a
-            class="semelhante"
+            class="semelhante btn btn-sm btn-secondary"
             v-for="semelhante in nome.semelantes"
             :key="semelhante.index"
             :href="`#inscricao-${semelhante.index}`"
@@ -77,13 +80,5 @@ export default {
 <style scoped>
 .semelhante {
   margin-right: 5px;
-}
-
-.semelhante::after {
-  content: ", ";
-}
-
-.semelhante:last-of-type::after {
-  content: "";
 }
 </style>
