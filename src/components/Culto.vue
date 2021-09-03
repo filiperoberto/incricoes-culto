@@ -129,3 +129,10 @@ export default {
   },
 };
 </script>
+<style scoped>
+@media print {
+  .lista {
+    page-break-inside: avoid;
+  }
+}
+</style>
