@@ -38,6 +38,17 @@
             v-model.number="vagas"
           />
         </div>
+        <div class="mb-3">
+          <label for="qtdCultos" class="form-label">Qtd. Cultos</label>
+          <input
+            type="number"
+            class="form-control"
+            id="qtdCultos"
+            max="2"
+            min="1"
+            v-model.number="cultos"
+          />
+        </div>
       </form>
       <div class="col-6">
         <todo v-model="todo" />
@@ -94,7 +105,7 @@
                 @up="subir($event)"
                 @down="descer($event)"
                 @trocaHorario="trocaHorario($event)"
-                horario="09h00"
+                :horario="horarioPrimeiroCulto"
               />
               <culto
                 class="culto"
@@ -125,7 +136,7 @@
     </div>
     <div class="print-hide" v-if="data">
       <hr />
-      <textos-padrao :data="data" />
+      <textos-padrao :data="data" :cultos='cultos'/>
     </div>
     <div class="print-hide">
       <hr />
@@ -174,6 +185,7 @@ export default {
       copiado: false,
       saveInterval: null,
       version: 0,
+      cultos: 2
     };
   },
   computed: {
@@ -189,6 +201,9 @@ export default {
       }
       return format(parseISO(this.data), "dd/MM/yyyy");
     },
+    horarioPrimeiroCulto () {
+      return this.cultos > 1 ? '9h00' : '10h00'
+    }
   },
   watch: {
     data() {
@@ -216,6 +231,7 @@ export default {
         vagas: this.vagas,
         todo: this.todo,
         version: this.version,
+        cultos: this.cultos
       };
     },
     salvar() {
@@ -238,12 +254,13 @@ export default {
 
       document.body.removeChild(element);
     },
-    load({ inscricoes, data, vagas, todo, version }) {
+    load({ inscricoes, data, vagas, todo, version, cultos }) {
       this.json = inscricoes || [];
       this.data = data;
       this.vagas = vagas;
       this.version = version || 0;
       this.todo = todo || [];
+      this.cultos = cultos || 2;
     },
     subir({ item }) {
       const index = this.json.map((v) => v.index).indexOf(item.index);
@@ -312,6 +329,7 @@ export default {
       this.vagas = 60;
       this.version = 0;
       this.todo = [];
+      this.cultos = 2;
 
       const inscricoes = this.empacotar();
       this.$store.dispatch("saveJson", inscricoes);

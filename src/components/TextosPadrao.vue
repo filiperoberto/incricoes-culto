@@ -21,7 +21,8 @@
         <p>
           Estão abertas as inscrições para o próximo culto presencial, em
           {{ dataSemAno }}, que deverão ser feitas através deste link:
-          https://forms.gle/pRxChjVYansE1gK9A
+          <span v-if='cultos === 2'>https://forms.gle/pRxChjVYansE1gK9A</span>
+          <span v-else>https://forms.gle/eLF2WmRCp4RGxXDg8</span>
         </p>
         <p>Avisos importantes:</p>
         <p>
@@ -59,7 +60,7 @@
           Segue em anexo a lista de inscritos para o culto presencial da Igreja
           Batista Reformada Vida Nova (IBRVN), que acontecerá domingo,
           <strong>{{ dataComAno }}</strong
-          >, em dois horários: 09h00 e 10h30.
+          >, <span v-if='cultos === 2'>em dois horários: 09h00 e 10h30.</span><span v-else>no horário: 10h00.</span>
         </p>
 
         <p>
@@ -92,6 +93,7 @@ export default {
   },
   props: {
     data: String,
+    cultos: Number
   },
   computed: {
     dataSemAno() {
