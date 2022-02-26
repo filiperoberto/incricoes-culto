@@ -7,6 +7,7 @@
       <tabela-inscricoes
         :inscricoes="vagasPreenchidas"
         :total="totalPreenchidas"
+        :vagas='vagas'
         @up="subir($event)"
         @down="descer($event)"
         @trocaHorario="$emit('trocaHorario', $event)"

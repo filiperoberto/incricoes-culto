@@ -297,8 +297,11 @@ export default {
     },
     copyEmails() {
       const emails = this.json
-        .filter((m) => m.vinculo.indexOf("6") > -1) //visitante
+        .filter(e => e.vinculo)
+        //.filter((m) => m.vinculo.indexOf("6") > -1) //visitante
+        .filter(e => e.email)
         .map((i) => i.email)
+        .map(e => e.trim())
         .filter((e) => e !== "")
         .filter((item, pos, self) => self.indexOf(item) == pos)
         .join(";");

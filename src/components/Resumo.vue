@@ -66,14 +66,14 @@ export default {
   methods: {
     equipe(inscricoes) {
       return inscricoes.filter(
-        (i) => ["1", "2", "3", "4"].indexOf(i.vinculo.charAt(0)) > -1
+        (i) => ["1", "2", "3", "4"].indexOf(i.vinculo?.charAt(0)) > -1
       );
     },
     membros(inscricoes) {
-      return inscricoes.filter((i) => ["5"].indexOf(i.vinculo.charAt(0)) > -1);
+      return inscricoes.filter((i) => ["5"].indexOf(i.vinculo?.charAt(0)) > -1);
     },
     visitantes(inscricoes) {
-      return inscricoes.filter((i) => ["6"].indexOf(i.vinculo.charAt(0)) > -1);
+      return inscricoes.filter((i) => ["6"].indexOf(i.vinculo?.charAt(0)) > -1);
     },
   },
 };

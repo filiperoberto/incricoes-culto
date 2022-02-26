@@ -48,6 +48,7 @@ export default {
   computed: {
     nomesRepetidos() {
       const listaFiltrada = this.json
+        .filter(i => i.nome) 
         .filter((i) => i.nome != "")
         .filter((i) => !i.remover);
 

@@ -28,6 +28,7 @@
           'preferencia': inscricao.preferencia,
           'sair': inscricao.sair,
           'table-danger print-hide': inscricao.remover,
+          'print-hide': !inscricao.nome
         }"
         :key="`inscricao-${index}`"
         :id='`inscricao-${inscricao.index}`'
@@ -110,7 +111,7 @@
       <tr class="print-hide">
         <td colspan="8" class="text-end"><strong>TOTAL</strong></td>
         <td class="text-center" >
-          <strong v-if='!isNaN(total)'>{{ total }}</strong>
+          <strong v-if='!isNaN(total)'>{{ total }}<small v-if='vagas'>/{{vagas}}</small></strong>
           <span class="badge bg-danger" v-else>Revisar</span>
         </td>
         <td colspan="2"></td>
@@ -118,7 +119,7 @@
       <tr class="print-show">
         <td colspan="3" class="text-end"><strong>TOTAL</strong></td>
         <td class="text-center">
-          <strong v-if='!isNaN(total)'>{{ total }}</strong>
+          <strong v-if='!isNaN(total)'>{{ total }}<small style="font-size: .7em" v-if='vagas'>/{{vagas}}</small></strong>
           <span v-else>?</span>
         </td>
       </tr>
@@ -136,6 +137,10 @@ export default {
       },
     },
     total: Number,
+    vagas: {
+      type: Number,
+      default: null
+    }
   },
   methods: {
     subir(item, index) {
